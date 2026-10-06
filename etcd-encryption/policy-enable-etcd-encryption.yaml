@@ -8,7 +8,7 @@ metadata:
     argocd.argoproj.io/sync-wave: "1"
     policy.open-cluster-management.io/standards: SOC 2, NIST SP 800-53
     policy.open-cluster-management.io/categories: SC System and Communications Protection
-    policy.open-cluster-management.io/controls: SC-13 Cryptographic Protection, CC6.6 Encryption at Rest
+    policy.open-cluster-management.io/controls: SC-13 Cryptographic Protection, SC-8 Transmission Confidentiality and Integrity, CC6.6 Encryption at Rest, CC6.7 Transmission Protection
 spec:
   disabled: false
   remediationAction: enforce
@@ -31,3 +31,6 @@ spec:
                 spec:
                   encryption:
                     type: aescbc
+                  tlsSecurityProfile:
+                    type: Intermediate
+

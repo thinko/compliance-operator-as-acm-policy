@@ -1,15 +1,17 @@
-# Standalone `etcd` Encryption Policy
+# Standalone APIServer Cryptographic Hardening (`etcd` Encryption & TLS Profile)
 
-This directory contains a standalone ACM governance policy to enforce AES-CBC encryption at rest on OpenShift's `etcd` database (`APIServer/cluster`).
+This directory contains a standalone ACM governance policy to enforce cryptographic hardening on OpenShift's `APIServer/cluster` resource:
+1. **At-Rest Encryption:** AES-CBC encryption (`spec.encryption.type: aescbc`) on OpenShift's `etcd` database (`Secrets`, `ConfigMaps`, `Routes`, OAuth tokens).
+2. **In-Transit Protection:** TLS Intermediate security profile (`spec.tlsSecurityProfile.type: Intermediate`), enforcing minimum TLS v1.2 with modern, secure cipher suites across the Kubernetes API server (and inherited by Ingress controllers).
 
 ## Why This Is a Separate Application
 
-Enabling `etcd` encryption is an infrastructure-level control plane change that:
-1. Generates an AES-CBC encryption key.
-2. Triggers sequential rolling restarts of `kube-apiserver` and `openshift-apiserver` static pods across control plane nodes.
-3. Performs a background migration rewriting all existing `Secrets`, `ConfigMaps`, `Routes`, and OAuth tokens into encrypted format (typically takes 15–30 minutes).
+Enabling `etcd` encryption and updating the TLS security profile are infrastructure-level control plane changes that:
+1. Generate an AES-CBC encryption key and update cipher suite configurations.
+2. Trigger sequential rolling restarts of `kube-apiserver` and `openshift-apiserver` static pods across control plane nodes.
+3. Perform a background migration rewriting all existing `Secrets`, `ConfigMaps`, `Routes`, and OAuth tokens into encrypted format (typically takes 15–30 minutes).
 
-To prevent accidental control plane restarts during regular compliance policy syncs, this change is decoupled into its own Argo CD `Application` (`etcd-encryption/argocd-application.yaml`) intended to be triggered during a maintenance window.
+To prevent unintended control plane restarts during regular compliance policy syncs, this change is decoupled into its own Argo CD `Application` (`etcd-encryption/argocd-application.yaml`) intended to be triggered during a maintenance window.
 
 ## Cluster Targeting via Placement
 
